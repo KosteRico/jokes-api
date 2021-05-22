@@ -1,0 +1,228 @@
+swagger: "2.0"
+
+info:
+  description: "This is Search storage API for connecting Web UI and Search Storage"
+  version: "1.0.0"
+  title: "REST API for jokes"
+host: "127.0.0.1:8000"
+basePath: "/api"
+tags:
+  - name: "auth"
+  - name: "jokes"
+
+securityDefinitions:
+  Token:
+    type: apiKey
+    name: Authorization
+    in: header
+
+schemes:
+  - http
+
+paths:
+  /login/:
+    post:
+      tags:
+        - "auth"
+      summary: "Log in"
+      parameters:
+        - in: "body"
+          name: "body"
+          required: true
+          schema:
+            $ref: "#/definitions/User"
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/Token"
+  /register/:
+    post:
+      tags:
+        - "auth"
+      summary: "Registration of user"
+      parameters:
+        - in: "body"
+          name: "body"
+          required: true
+          schema:
+            $ref: "#/definitions/User"
+      responses:
+        "201":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/Token"
+  /logout:
+    post:
+      security:
+        - Token: [ ]
+      tags:
+        - "auth"
+      summary: "Log out"
+      parameters:
+        - in: "body"
+          name: "body"
+          required: true
+          schema:
+            $ref: "#/definitions/User"
+      responses:
+        "200":
+          description: "OK"
+        "403":
+          description: ""
+
+
+  /jokes/:
+    get:
+      security:
+        - Token: [ ]
+      tags:
+        - "jokes"
+      summary: "View all jokes of the user"
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Joke"
+
+    post:
+      security:
+        - Token: [ ]
+      tags:
+        - "jokes"
+      summary: "Create joke"
+      parameters:
+        - in: "body"
+          name: "body"
+          required: true
+          schema:
+            type: "object"
+            properties:
+              user:
+                type: "string"
+              text:
+                type: "string"
+      responses:
+        "200":
+          description: ""
+          schema:
+            $ref: "#/definitions/Joke"
+
+        "403":
+          description: ""
+
+  /jokes/generate/:
+    post:
+      security:
+        - Token: [ ]
+      tags:
+        - "jokes"
+      summary: "Generate joke"
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Joke"
+  /jokes/{id}/:
+    get:
+      security:
+        - Token: [ ]
+      tags:
+        - "jokes"
+      summary: "View joke"
+      parameters:
+        - in: "path"
+          name: "id"
+          required: true
+          type: "integer"
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Joke"
+        "403":
+          description: "Joke isn't available"
+    patch:
+      security:
+        - Token: [ ]
+      tags:
+        - "jokes"
+      summary: "Modify joke text"
+      parameters:
+        - in: "path"
+          name: "id"
+          required: true
+          type: "integer"
+        - in: "body"
+          name: "body"
+          required: true
+          schema:
+            type: "object"
+            properties:
+              text:
+                type: "string"
+      responses:
+        "200":
+          description: "OK"
+        "403":
+          description: "Joke isn't available"
+    delete:
+      security:
+        - Token: [ ]
+      tags:
+        - "jokes"
+      summary: "Delete joke"
+      parameters:
+        - in: "path"
+          name: "id"
+          required: true
+          type: "integer"
+
+      responses:
+        "204":
+          description: "Joke deleted"
+        "403":
+          description: "Joke isn't available"
+
+
+
+definitions:
+  User:
+    type: "object"
+    properties:
+      username:
+        type: "string"
+
+      password:
+        type: "string"
+
+    xml:
+      name: "Query"
+  Token:
+    type: "object"
+    properties:
+      token:
+        type: "string"
+
+
+    xml:
+      name: "Query"
+
+  Joke:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+      user:
+        type: "string"
+      text:
+        type: "string"
+
+    xml:
+      name: "Query"
